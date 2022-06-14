@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="145.71 50.89 178.53 135.41">
+  <defs>
+    <style>
+      .a{fill:#ff3e00;}.b{fill:#fff;}.c{fill:#1273ff;}.d{fill:#ffd815;}
+    </style>
+  </defs>
+  <path class="c" d="M324.237,118.694c-59.509-36.573-119.018,36.573-178.526,0V61.45c59.508,36.573,119.017-36.573,178.526,0Z"/>
+  <path class="d" d="M324.237,175.74c-59.509-36.573-119.018,36.573-178.526,0V118.5c59.508,36.573,119.017-36.573,178.526,0Z"/>
+  <use width="93.224" height="112" transform="translate(34.228 29.267) scale(1.584)" xlink:href="#a"/>
+</svg>
