@@ -1,80 +1,94 @@
 <script lang="ts">
-  import IntersectionObserver from "svelte-intersection-observer";
-
   import Projects from "./lib/Projects.svelte";
   import Articles from "./lib/Articles.svelte";
+  import Repos from "./lib/Repos.svelte";
+  import SocialLinks from "./lib/SocialLinks.svelte";
   import TailwindCss from "./TailwindCSS.svelte";
   import StopWar from "./assets/stopwar.svg";
-  import { getJSON } from "./lib/util";
+  import { getContent } from "./lib/util";
+  import About from "./lib/About.svelte";
+  import IntersectionObserver from "./lib/IntersectionObserver.svelte";
+  import projects from "./projects.json";
 
-  let element;
   let scroollY;
 
-  const profilePromise = getJSON(
+  const profilePromise = getContent(
     "github/profile",
     "https://api.github.com/users/svengau"
   );
-  const reposPromise = getJSON(
+  const reposPromise = getContent(
     "github/repos",
     "https://api.github.com/users/svengau/repos?sort=created&per_page=100"
   ).then((repos) =>
     repos.filter((o) => !o.fork && !["svengau", "fs-status"].includes(o.name))
   );
-  const articlesPromise = getJSON(
+  const articlesPromise = getContent(
     "dev.to/articles",
     "https://dev.to/api/articles?username=svengau"
+  );
+  const aboutMePromise = getContent(
+    "about",
+    "https://raw.githubusercontent.com/svengau/svengau/main/README.md"
   );
 
   // Tabs
   enum Tab {
-    projects = "#projects",
-    articles = "#articles",
+    repos = "repos",
+    projects = "projects",
+    articles = "articles",
+    about = "about",
   }
   const tabs = [
-    { hash: Tab.projects, label: "Projects" },
-    { hash: Tab.articles, label: "Articles" },
+    { hash: "#" + Tab.about, label: "About" },
+    { hash: "#" + Tab.repos, label: "Repos" },
+    { hash: "#" + Tab.projects, label: "Projects" },
+    { hash: "#" + Tab.articles, label: "Articles" },
   ];
   let currentHash = tabs[0].hash as string;
-  let compact = false;
-  function onScroll(e) {
-    if (scroollY > 10) {
-      compact = true;
-    }
-  }
+  let debounceTimer: ReturnType<typeof setTimeout>;
+
   function onHashchange() {
-    currentHash = location.hash;
-    if (currentHash === Tab.projects) {
-      window.scrollTo(0, 0);
-    }
+    debounceTimer && clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      currentHash = location.hash;
+    }, 400);
   }
+
   function scrollIntoView({ target }) {
-    const el = document.querySelector(target.getAttribute("href"));
-    if (!el) return;
+    const hash = target.getAttribute("href");
+    const el = document.querySelector(hash);
+    if (!el) throw new Error("No element found for hash: " + hash);
     el.scrollIntoView({
+      block: "start",
       behavior: "smooth",
     });
+
+    // manually update the hash because event is not propagated
+    history.pushState({}, "", hash);
+    onHashchange();
   }
+
+  function onIntersect(tabId) {
+    history.pushState({}, "", "#" + tabId);
+    // call onHashchange manually
+    // because https://github.com/sveltejs/kit/issues/2588
+    onHashchange();
+  }
+
+  const classToFixScrolling = "pt-72 -mt-72 md:pt-64 md:-mt-64 mb-24";
 </script>
 
 <TailwindCss />
-<svelte:window
-  bind:scrollY={scroollY}
-  on:scroll={onScroll}
-  on:hashchange={onHashchange}
-/>
+<svelte:window bind:scrollY={scroollY} on:hashchange={onHashchange} />
 
 <main class="mx-auto max-w-xl flex flex-col items-center font-mono">
-  <div class="sticky top-0 bg-white">
-    <div
-      class="pt-10 flex gap-6 transition-all {compact
-        ? 'flex-row'
-        : 'flex-col items-center'}"
-    >
+  <div class="sticky top-0 bg-white h-64">
+    <div class="pt-10 mx-4 flex gap-6 transition-all flex-row">
       {#await profilePromise}
         <p>...loading</p>
       {:then profile}
         <div>
-          <div class="relative {compact ? 'w-24 h-24' : 'w-32 h-32'}">
+          <div class="relative {'w-24 h-24'}">
             <img
               src={profile.avatar_url}
               alt={profile.name}
@@ -87,75 +101,10 @@
             />
           </div>
         </div>
-        <div class="flex flex-col {compact ? '' : 'items-center'}">
-          <div
-            class="flex {compact
-              ? 'flex-row justify-between mb-4'
-              : 'flex-col items-center'}"
-          >
+        <div class="flex flex-col">
+          <div class="flex flex-col md:flex-row justify-between mb-4">
             <h1 class="text-2xl">{profile.name}</h1>
-            <div
-              class="flex gap-4 text-gray-400 items-center {compact
-                ? 'text-lg'
-                : 'text-3xl mt-4 mb-8'}"
-            >
-              <a href="https://www.linkedin.com/in/svengaubert" target="_blank">
-                <i class="fa-brands fa-linkedin-in" />
-              </a>
-              <a
-                href="https://www.malt.fr/profile/svengaubert"
-                target="_blank"
-                class="w-7 fill-gray-400"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 25.35 186.79 186.79"
-                >
-                  <path
-                    d="M159.852 52.304C145.752 38.204 130.69 47.33 121.264 56.756L32.22 145.803C22.794 155.228 12.928 169.549 27.768 184.387C42.608 199.23 56.929 189.362 66.353 179.936L155.399 90.891C164.825 81.464 173.951 66.402 159.852 52.304Z"
-                  />
-                  <path
-                    d="M74.78 48.657L93.635 67.511L112.827 48.319C114.13 47.013 115.453 45.801 116.784 44.658C114.774 34.518 108.988 25.351 93.626 25.351C78.235 25.351 72.456 34.554 70.457 44.716C71.894 45.959 73.328 47.205 74.78 48.657Z"
-                  />
-                  <path
-                    d="M112.816 188.71L93.636 169.529L74.791 188.372C73.36 189.804 71.936 191.112 70.518 192.341C72.679 202.678 78.795 212.146 93.628 212.146C108.5 212.146 114.608 202.627 116.755 192.257C115.436 191.122 114.116 190.009 112.816 188.71Z"
-                  />
-                  <path
-                    d="M66.783 94.364H30.433C17.105 94.364 0 98.563 0 118.501C0 133.378 9.522 139.487 19.894 141.633C21.122 140.215 66.783 94.364 66.783 94.364Z"
-                  />
-                  <path
-                    d="M167.435 95.332C166.285 96.67 120.528 142.637 120.528 142.637H156.362C169.691 142.637 186.795 139.488 186.795 118.501C186.795 103.112 177.595 97.33 167.435 95.332Z"
-                  />
-                  <path
-                    d="M78.693 82.432L85.187 75.938L66.344 57.092C56.917 47.667 42.598 37.8 27.758 52.64C16.876 63.522 19.293 74.113 25.065 82.711C26.823 82.581 78.693 82.432 78.693 82.432Z"
-                  />
-                  <path
-                    d="M108.571 154.569L102.06 161.08L121.254 180.272C130.68 189.699 145.742 198.823 159.84 184.725C170.36 174.204 167.946 163.154 162.13 154.302C160.258 154.437 108.571 154.569 108.571 154.569Z"
-                  />
-                </svg>
-              </a>
-              <a href="https://github.com/svengau" target="_blank">
-                <i class="fa-brands fa-github" />
-              </a>
-              <a href="https://twitter.com/svengau" target="_blank">
-                <i class="fa-brands fa-twitter" />
-              </a>
-              <a href="https://dev.to/svengau" target="_blank">
-                <i class="fa-brands fa-dev" />
-              </a>
-              <a
-                href="https://etherscan.io/address/0xe4fcfa964e5ccfc0fbaab38eab0ceffd6e605995"
-              >
-                <i class="fa-brands fa-ethereum" />
-              </a>
-              <a
-                href="https://www.npmjs.com/~svengau"
-                target="_blank"
-                class="text-4xl"
-              >
-                <i class="fa-brands fa-npm" />
-              </a>
-            </div>
+            <SocialLinks compact={true} />
           </div>
           <p class="transition-all mb-10">
             {profile.bio}
@@ -174,16 +123,19 @@
       {/await}
     </div>
     <ul
-      class="flex flex-row gap-4 mb-6 border-b-2 border-b-grey-600 w-full justify-center"
+      class="flex flex-row gap-4 mb-6 border-b-2 border-b-grey-600 w-full justify-center bg-white"
     >
       {#each tabs as item}
         <li
-          class="cursor-pointer pb-2 px-2"
           style={currentHash === item.hash
             ? "box-shadow: 0 -4px 0 0 inset rgb(229, 231, 235);"
             : ""}
         >
-          <a href={item.hash} on:click|preventDefault={scrollIntoView}>
+          <a
+            href={item.hash}
+            on:click|preventDefault={scrollIntoView}
+            class="cursor-pointer px-2 pb-2 block"
+          >
             {item.label}
           </a>
         </li>
@@ -191,42 +143,86 @@
     </ul>
   </div>
 
-  <div class="mx-4 md:mx-0 ">
-    <div id="projects">
-      <h2 class="text-xl font-semibold mb-2 ">
-        <i class="fa-solid fa-hashtag" />
-        Projects
-      </h2>
-
-      {#await reposPromise}
+  <div class="mx-4 md:mx-0">
+    <div id={Tab.about} class={classToFixScrolling}>
+      <IntersectionObserver on:intersect={() => onIntersect(Tab.about)}>
+        <h2 class="text-2xl font-semibold mb-2 ">
+          <i class="fa-solid fa-hashtag" />
+          About me
+        </h2>
+      </IntersectionObserver>
+      {#await aboutMePromise}
         <p>...loading</p>
-      {:then repositories}
-        <Projects {repositories} />
+      {:then content}
+        <About {content} />
       {:catch error}
         <p style="bg-red-500">{error.message}</p>
       {/await}
     </div>
 
-    <div id="articles">
-      <IntersectionObserver
-        {element}
-        on:observe={(e) => {
-          currentHash = e.detail.isIntersecting ? Tab.articles : Tab.projects;
-          history.pushState({}, "", currentHash);
-        }}
-      >
-        <h2 class="text-xl font-semibold mb-2" bind:this={element}>
+    <div id={Tab.repos} class={classToFixScrolling}>
+      <IntersectionObserver on:intersect={() => onIntersect(Tab.repos)}>
+        <h2 class="text-2xl font-semibold mb-2 ">
           <i class="fa-solid fa-hashtag" />
-          Articles
+          My Public GH Repos
         </h2>
-        {#await articlesPromise}
-          <p>...loading</p>
-        {:then articles}
-          <Articles {articles} />
-        {:catch error}
-          <p style="bg-red-500">{error.message}</p>
-        {/await}
       </IntersectionObserver>
+      {#await reposPromise}
+        <p>...loading</p>
+      {:then repositories}
+        <Repos {repositories} />
+      {:catch error}
+        <p style="bg-red-500">{error.message}</p>
+      {/await}
     </div>
+
+    <div id={Tab.projects} class={classToFixScrolling}>
+      <IntersectionObserver on:intersect={() => onIntersect(Tab.projects)}>
+        <h2 class="text-2xl font-semibold mb-2 ">
+          <i class="fa-solid fa-hashtag" />
+          Side Projects
+        </h2>
+      </IntersectionObserver>
+      <Projects {projects} />
+    </div>
+
+    <div id={Tab.articles} class={classToFixScrolling}>
+      <IntersectionObserver on:intersect={() => onIntersect(Tab.articles)}>
+        <h2 class="text-2xl font-semibold mb-2">
+          <i class="fa-solid fa-hashtag" />
+          Articles on dev.to
+        </h2>
+      </IntersectionObserver>
+      {#await articlesPromise}
+        <p>...loading</p>
+      {:then articles}
+        <Articles {articles} />
+        <p>
+          And previously a few more on <a
+            class="underline"
+            href="https://medium.com/@svengau"
+            target="_blank"
+          >
+            Medium</a
+          >
+          ...
+        </p>
+      {:catch error}
+        <p style="bg-red-500">{error.message}</p>
+      {/await}
+    </div>
+
+    <p class="mb-10 text-sm text-gray-500 text-center">
+      Site made with
+      <i class="fa-solid fa-heart" title="twitter" />, Svelte & TailwindCSS.
+      Source on
+      <a
+        href="https://github.com/svengau/svengau.github.io"
+        target="_blank"
+        alt="github"
+      >
+        <i class="fa-brands fa-github" title="github" />
+      </a>
+    </p>
   </div>
 </main>

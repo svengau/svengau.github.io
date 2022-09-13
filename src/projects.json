@@ -1,0 +1,43 @@
+[
+    {
+        "year": 2020,
+        "name": "FullstackRocket",
+        "description": "A marketplace to sell ready-to-deploy solutions. Developped after loosing my job, because of the pandemic.",
+        "stack": [
+            "React",
+            "GraphQL",
+            "TypeScript",
+            "Stripe",
+            "MongoDB",
+            "GraphQL Modules",
+            "Netlify"
+        ],
+        "url": "https://fullstackrocket.com"
+    },
+    {
+        "year": 2020,
+        "name": "InternationalSchoolist",
+        "description": "A service to help parents find their next international schools. Developped in 10 days.",
+        "stack": [
+            "Next.js",
+            "Tailwind CSS",
+            "TypeScript",
+            "MongoDB"
+        ],
+        "url": "https://www.internationalschoolist.com"
+    },
+    {
+        "year": 2022,
+        "name": "Mes soins infirmiers",
+        "description": "A sideproject for my 2 brothers to manage appointments and patient cases for their nursing agency.",
+        "stack": [
+            "Next.js",
+            "Tailwind CSS",
+            "TypeScript",
+            "MongoDB",
+            "REST API",
+            "Stripe"
+        ],
+        "url": "https://www.mes-soins-infirmiers.com"
+    }
+]
