@@ -1,7 +1,7 @@
 export async function getContent(
   key: string,
   url: string,
-  { json = false } = {}
+  { json = true } = {}
 ) {
   const content = localStorage[key];
   if (!content || content.expiredAt < Date.now()) {

@@ -27,8 +27,9 @@
     "https://dev.to/api/articles?username=svengau"
   );
   const aboutMePromise = getContent(
-    "about",
-    "https://raw.githubusercontent.com/svengau/svengau/main/README.md"
+    "github/about",
+    "https://raw.githubusercontent.com/svengau/svengau/main/README.md",
+    { json: false }
   );
 
   // Tabs
