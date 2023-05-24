@@ -101,10 +101,9 @@
             />
           </div>
         </div>
-        <div class="flex flex-col">
+        <div class="flex flex-col items-start">
           <div class="flex flex-col md:flex-row justify-between mb-4">
             <h1 class="text-2xl">{profile.name}</h1>
-            <SocialLinks compact={true} />
           </div>
           <p class="transition-all mb-10">
             {profile.bio}
@@ -116,6 +115,7 @@
                 {profile.company}</a
               >
             {/if}
+            <SocialLinks compact={true} />
           </p>
         </div>
       {:catch error}
@@ -146,7 +146,7 @@
   <div class="mx-4 md:mx-0">
     <div id={Tab.about} class={classToFixScrolling}>
       <IntersectionObserver on:intersect={() => onIntersect(Tab.about)}>
-        <h2 class="text-2xl font-semibold mb-2 ">
+        <h2 class="text-2xl font-semibold mb-2">
           <i class="fa-solid fa-hashtag" />
           About me
         </h2>
@@ -162,7 +162,7 @@
 
     <div id={Tab.repos} class={classToFixScrolling}>
       <IntersectionObserver on:intersect={() => onIntersect(Tab.repos)}>
-        <h2 class="text-2xl font-semibold mb-2 ">
+        <h2 class="text-2xl font-semibold mb-2">
           <i class="fa-solid fa-hashtag" />
           My Public GH Repos
         </h2>
@@ -178,7 +178,7 @@
 
     <div id={Tab.projects} class={classToFixScrolling}>
       <IntersectionObserver on:intersect={() => onIntersect(Tab.projects)}>
-        <h2 class="text-2xl font-semibold mb-2 ">
+        <h2 class="text-2xl font-semibold mb-2">
           <i class="fa-solid fa-hashtag" />
           Side Projects
         </h2>

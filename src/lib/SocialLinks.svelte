@@ -7,18 +7,13 @@
     ? 'text-lg'
     : 'text-3xl mt-4 mb-8'}"
 >
-  <a
-    href="https://www.linkedin.com/in/svengaubert"
-    target="_blank"
-    alt="linkedin"
-  >
+  <a href="https://www.linkedin.com/in/svengaubert" target="_blank">
     <i class="fa-brands fa-linkedin-in" title="linkedin" />
   </a>
   <a
     href="https://www.malt.fr/profile/svengaubert"
     target="_blank"
-    class="w-7 fill-gray-400"
-    alt="malt"
+    class="w-7 fill-gray-400 p-1"
   >
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 25.35 186.79 186.79">
       <path
@@ -44,15 +39,21 @@
       />
     </svg>
   </a>
-  <a href="https://github.com/svengau" target="_blank" alt="github">
+  <a href="https://github.com/svengau" target="_blank">
     <i class="fa-brands fa-github" title="github" />
   </a>
-  <a href="https://twitter.com/svengau" target="_blank" alt="twitter">
+  <a href="https://twitter.com/svengau" target="_blank">
     <i class="fa-brands fa-twitter" title="twitter" />
   </a>
-  <a href="https://dev.to/svengau" target="_blank" alt="dev.to">
+  <a href="https://dev.to/svengau" target="_blank">
     <i class="fa-brands fa-dev" title="dev.to" />
   </a>
+  <a
+    href="https://github.com/svengau.gpg"
+    target="_blank"
+    class="font-bold tracking-tighter">GPG</a
+  >
+
   <a
     href="https://etherscan.io/address/0xe4fcfa964e5ccfc0fbaab38eab0ceffd6e605995"
     alt="etherscan"
